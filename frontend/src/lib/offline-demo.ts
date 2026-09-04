@@ -1,0 +1,145 @@
+import type {
+  Alert,
+  Dashboard,
+  Equipment,
+  Forecast,
+  GeologySample,
+  Mine,
+  ModelStatus,
+  ProductionPoint,
+  Recommendation,
+  Report,
+  SatelliteIntelligence,
+  Shortfall,
+  SimulationResult,
+  Zone,
+} from '@/lib/api-client-react';
+
+export const demoDashboard: Dashboard = {
+  targets: 12,
+  high_priority: 4,
+  current_production: 8420,
+  production_target: 10000,
+  forecast_production: 9310,
+  expected_shortfall: 690,
+  shortfall_probability: 0.31,
+  equipment_availability: 0.87,
+  activity: [
+    { id: 'a1', title: 'North Ridge re-ranked', detail: 'Prospectivity model promoted zone NR-04', timestamp: '12 min ago', type: 'model' },
+    { id: 'a2', title: 'Haul truck H-07 serviced', detail: 'Returned to active fleet at Koderma East', timestamp: '38 min ago', type: 'equipment' },
+    { id: 'a3', title: 'Rainfall anomaly detected', detail: '4.2 mm above seasonal baseline', timestamp: '1 hr ago', type: 'satellite' },
+    { id: 'a4', title: 'Production plan recalculated', detail: 'Forecast updated through 30 Sep', timestamp: '2 hrs ago', type: 'forecast' },
+  ],
+  production_series: [
+    { date: '01 Sep', actual: 820, target: 910, forecast: 820 },
+    { date: '05 Sep', actual: 890, target: 925, forecast: 890 },
+    { date: '09 Sep', actual: 760, target: 940, forecast: 760 },
+    { date: '13 Sep', actual: 975, target: 950, forecast: 975 },
+    { date: '17 Sep', actual: 890, target: 960, forecast: 890 },
+    { date: '21 Sep', actual: 910, target: 970, forecast: 910 },
+    { date: '25 Sep', actual: 960, target: 980, forecast: 960 },
+    { date: '30 Sep', actual: 935, target: 990, forecast: 935 },
+  ],
+};
+
+export const demoMines: Mine[] = [
+  { id: 'm1', name: 'Koderma East', state: 'Jharkhand', status: 'On plan', production: 3320, target: 3700, coordinates: [24.46, 85.59] },
+  { id: 'm2', name: 'Barbil Ridge', state: 'Odisha', status: 'Watch', production: 2710, target: 3200, coordinates: [21.63, 85.6] },
+  { id: 'm3', name: 'Sandur North', state: 'Karnataka', status: 'On plan', production: 2390, target: 2600, coordinates: [15.08, 76.54] },
+];
+
+export const demoZones: Zone[] = [
+  { id: 'NR-04', latitude: 24.49, longitude: 85.62, area: 18.4, prospectivity: 0.91, confidence: 0.88, geological_score: 0.94, satellite_score: 0.86, terrain_score: 0.82, resource: 420, priority: 'Critical', validation_status: 'Validated', mine: 'Koderma East' },
+  { id: 'BR-11', latitude: 21.65, longitude: 85.57, area: 24.8, prospectivity: 0.84, confidence: 0.79, geological_score: 0.81, satellite_score: 0.9, terrain_score: 0.76, resource: 365, priority: 'High', validation_status: 'Field check', mine: 'Barbil Ridge' },
+  { id: 'SN-02', latitude: 15.12, longitude: 76.51, area: 12.6, prospectivity: 0.77, confidence: 0.74, geological_score: 0.78, satellite_score: 0.71, terrain_score: 0.81, resource: 188, priority: 'High', validation_status: 'Validated', mine: 'Sandur North' },
+  { id: 'NR-09', latitude: 24.42, longitude: 85.55, area: 9.3, prospectivity: 0.62, confidence: 0.68, geological_score: 0.59, satellite_score: 0.71, terrain_score: 0.62, resource: 104, priority: 'Monitor', validation_status: 'Unvalidated', mine: 'Koderma East' },
+  { id: 'BR-03', latitude: 21.58, longitude: 85.64, area: 16.1, prospectivity: 0.55, confidence: 0.61, geological_score: 0.57, satellite_score: 0.58, terrain_score: 0.52, resource: 92, priority: 'Monitor', validation_status: 'Unvalidated', mine: 'Barbil Ridge' },
+];
+
+export const demoGeology: GeologySample[] = [
+  { id: 'GS-104', latitude: 24.49, longitude: 85.62, manganese_grade: 38.4, rock_type: 'Gondite', score: 0.94 },
+  { id: 'GS-098', latitude: 24.47, longitude: 85.6, manganese_grade: 34.8, rock_type: 'Quartzite', score: 0.87 },
+  { id: 'GS-121', latitude: 21.65, longitude: 85.57, manganese_grade: 31.2, rock_type: 'BHQ', score: 0.82 },
+  { id: 'GS-087', latitude: 15.11, longitude: 76.53, manganese_grade: 29.7, rock_type: 'Gondite', score: 0.79 },
+];
+
+export const demoSatellite: SatelliteIntelligence = {
+  provider: 'Sentinel-2 L2A',
+  last_updated: '24 Sep 2024 · 06:20 IST',
+  quality: 0.93,
+  observations: [
+    { date: '18 Sep', ndvi: 0.42, lst: 31.2, rainfall: 2.4, soil_moisture: 0.36, cloud_coverage: 8 },
+    { date: '19 Sep', ndvi: 0.45, lst: 30.8, rainfall: 0, soil_moisture: 0.34, cloud_coverage: 4 },
+    { date: '20 Sep', ndvi: 0.43, lst: 31.8, rainfall: 1.7, soil_moisture: 0.37, cloud_coverage: 11 },
+    { date: '21 Sep', ndvi: 0.47, lst: 30.4, rainfall: 0, soil_moisture: 0.33, cloud_coverage: 3 },
+    { date: '22 Sep', ndvi: 0.44, lst: 32.3, rainfall: 4.2, soil_moisture: 0.41, cloud_coverage: 18 },
+    { date: '23 Sep', ndvi: 0.46, lst: 31.1, rainfall: 0.8, soil_moisture: 0.38, cloud_coverage: 6 },
+    { date: '24 Sep', ndvi: 0.48, lst: 30.6, rainfall: 0, soil_moisture: 0.35, cloud_coverage: 2 },
+  ],
+};
+
+export const demoProduction: ProductionPoint[] = demoDashboard.production_series ?? [];
+export const demoForecast: Forecast = {
+  horizon: 30,
+  confidence: 0.82,
+  points: [
+    { date: '01 Oct', actual: 0, target: 1010, forecast: 970 },
+    { date: '08 Oct', actual: 0, target: 1025, forecast: 988 },
+    { date: '15 Oct', actual: 0, target: 1040, forecast: 1002 },
+    { date: '22 Oct', actual: 0, target: 1050, forecast: 1015 },
+    { date: '29 Oct', actual: 0, target: 1060, forecast: 1030 },
+  ],
+};
+
+export const demoShortfall: Shortfall = {
+  risk: 'Elevated',
+  probability: 0.31,
+  expected_shortfall: 690,
+  contributors: [
+    { name: 'Haul fleet availability', impact: 34, direction: 'negative' },
+    { name: 'Monsoon rainfall', impact: 26, direction: 'negative' },
+    { name: 'Ore feed variability', impact: 18, direction: 'negative' },
+    { name: 'Blasting cycle efficiency', impact: 12, direction: 'positive' },
+  ],
+  timeline: demoProduction,
+};
+
+export const demoEquipment: Equipment[] = [
+  { id: 'H-07', type: 'Haul truck', status: 'Maintenance', availability: 0.62, downtime: 18.4, maintenance: 'Due in 2 days', zone: 'NR-04', production_impact: 142, utilization: 0.71 },
+  { id: 'EX-12', type: 'Excavator', status: 'Active', availability: 0.94, downtime: 3.2, maintenance: 'Due in 19 days', zone: 'BR-11', production_impact: 38, utilization: 0.88 },
+  { id: 'DR-03', type: 'Drill rig', status: 'Active', availability: 0.89, downtime: 6.6, maintenance: 'Due in 8 days', zone: 'SN-02', production_impact: 71, utilization: 0.82 },
+  { id: 'H-14', type: 'Haul truck', status: 'Watch', availability: 0.78, downtime: 11.1, maintenance: 'Inspection queued', zone: 'BR-11', production_impact: 96, utilization: 0.76 },
+];
+
+export const demoAlerts: Alert[] = [
+  { id: 'al1', severity: 'Critical', title: 'Shortfall risk above operating threshold', detail: 'Forecast is 690 t below monthly plan if H-07 remains offline.', timestamp: '12 min ago', acknowledged: false },
+  { id: 'al2', severity: 'Warning', title: 'Cloud cover degrading satellite confidence', detail: 'Barbil Ridge observation confidence reduced to 79%.', timestamp: '1 hr ago', acknowledged: false },
+  { id: 'al3', severity: 'Info', title: 'NR-04 validation complete', detail: 'Geology and satellite evidence are now aligned.', timestamp: '2 hrs ago', acknowledged: true },
+];
+
+export const demoRecommendations: Recommendation[] = [
+  { id: 'r1', title: 'Re-route H-14 to North Ridge', detail: 'Cover the H-07 gap with the nearest compatible haul unit for the next 48 hours.', impact: 184, confidence: 0.91, priority: 'Immediate', status: 'Open' },
+  { id: 'r2', title: 'Bring NR-04 into the September plan', detail: 'High confidence prospectivity and a short haul path support an accelerated field validation.', impact: 126, confidence: 0.84, priority: 'High', status: 'Open' },
+  { id: 'r3', title: 'Shift blasting window by 6 hours', detail: 'Avoid the modeled afternoon rainfall spike on 27 September.', impact: 74, confidence: 0.77, priority: 'Medium', status: 'In review' },
+];
+
+export const demoModels: ModelStatus[] = [
+  { id: 'mdl1', name: 'Prospectivity Fusion', version: 'v2.4.1', status: 'Production', accuracy: 0.89, updated: '24 Sep 2024' },
+  { id: 'mdl2', name: 'Production Forecast', version: 'v1.8.0', status: 'Production', accuracy: 0.82, updated: '23 Sep 2024' },
+  { id: 'mdl3', name: 'Shortfall Risk', version: 'v1.3.2', status: 'Monitoring', accuracy: 0.78, updated: '21 Sep 2024' },
+  { id: 'mdl4', name: 'Satellite Anomaly', version: 'v3.0.0', status: 'Staging', accuracy: 0.86, updated: '19 Sep 2024' },
+];
+
+export const demoReports: Report[] = [
+  { id: 'rep1', title: 'September command review', format: 'PDF', created_at: '24 Sep 2024 · 08:34' },
+  { id: 'rep2', title: 'North Ridge validation brief', format: 'PDF', created_at: '23 Sep 2024 · 16:10' },
+  { id: 'rep3', title: 'Fleet availability audit', format: 'CSV', created_at: '20 Sep 2024 · 11:42' },
+];
+
+export const demoSimulation: SimulationResult = {
+  baseline: 8420,
+  scenario: 9174,
+  recovered: 754,
+  shortfall_reduction: 0.61,
+  risk_reduction: 0.18,
+};
