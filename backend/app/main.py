@@ -8,7 +8,19 @@ from .data import DATA
 from .ml import prospectivity, production, shortfall, anomaly
 from .api.admin import router as admin_router
 app=FastAPI(title="MANGANEX AI API",version="2.0.0",description="AI/ML and Earth-observation decision support for manganese exploration and production.")
-app.add_middleware(CORSMiddleware,allow_origins=["http://localhost:5173","http://127.0.0.1:5173"],allow_credentials=True,allow_methods=["*"],allow_headers=["*"])
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "https://manganex-ai.vercel.app",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.include_router(admin_router)
 class PredictionInput(BaseModel): values:dict[str,Any]=Field(default_factory=dict)
 class SimulationInput(BaseModel): equipment_availability:float; mining_hours:float; rainfall:float; blasting_delay:float; ore_availability:float; active_equipment:float
