@@ -60,6 +60,163 @@ const navGroups: { label: string; items: [string, string, IconType][] }[] = [
 
 type IconType = typeof Gauge;
 
+type ChartPoint = {
+  date: string;
+  actual?: number;
+  target?: number;
+  forecast?: number;
+};
+
+function MiniChart({
+  series,
+  forecast = false,
+}: {
+  series: ChartPoint[];
+  forecast?: boolean;
+}) {
+  if (!series || series.length === 0) {
+    return (
+      <div className="flex h-[180px] items-center justify-center text-[10px] text-[hsl(var(--muted-foreground))]">
+        No chart data available
+      </div>
+    );
+  }
+
+  const width = 600;
+  const height = 180;
+  const paddingX = 10;
+  const paddingY = 15;
+
+  const values = series.flatMap((item) =>
+    [item.actual, item.target, item.forecast].filter(
+      (value): value is number => typeof value === "number"
+    )
+  );
+
+  const minValue = Math.min(...values);
+  const maxValue = Math.max(...values);
+  const range = maxValue - minValue || 1;
+
+  const getX = (index: number) =>
+    paddingX +
+    (index / Math.max(series.length - 1, 1)) *
+      (width - paddingX * 2);
+
+  const getY = (value: number) =>
+    height -
+    paddingY -
+    ((value - minValue) / range) * (height - paddingY * 2);
+
+  const makePoints = (
+    key: "actual" | "target" | "forecast"
+  ) =>
+    series
+      .map((item, index) => {
+        const value = item[key];
+        return typeof value === "number"
+          ? `${getX(index)},${getY(value)}`
+          : null;
+      })
+      .filter(Boolean)
+      .join(" ");
+
+  const actualPoints = makePoints("actual");
+  const targetPoints = makePoints("target");
+  const forecastPoints = makePoints("forecast");
+
+  return (
+    <div className="w-full overflow-hidden">
+      <svg
+        viewBox={`0 0 ${width} ${height}`}
+        className="h-[180px] w-full"
+        preserveAspectRatio="none"
+      >
+        {[0, 1, 2, 3].map((line) => {
+          const y =
+            paddingY +
+            (line / 3) * (height - paddingY * 2);
+
+          return (
+            <line
+              key={line}
+              x1={paddingX}
+              x2={width - paddingX}
+              y1={y}
+              y2={y}
+              stroke="hsl(var(--border))"
+              strokeWidth="1"
+            />
+          );
+        })}
+
+        {targetPoints && (
+          <polyline
+            points={targetPoints}
+            fill="none"
+            stroke="hsl(var(--muted-foreground))"
+            strokeWidth="2"
+            strokeDasharray="5 5"
+            vectorEffect="non-scaling-stroke"
+          />
+        )}
+
+        {forecast && forecastPoints && (
+          <polyline
+            points={forecastPoints}
+            fill="none"
+            stroke="hsl(var(--accent))"
+            strokeWidth="2"
+            strokeDasharray="6 4"
+            vectorEffect="non-scaling-stroke"
+          />
+        )}
+
+        {actualPoints && (
+          <polyline
+            points={actualPoints}
+            fill="none"
+            stroke="hsl(var(--primary))"
+            strokeWidth="3"
+            vectorEffect="non-scaling-stroke"
+          />
+        )}
+
+        {series.map((item, index) => {
+          if (typeof item.actual !== "number") return null;
+
+          return (
+            <circle
+              key={`${item.date}-${index}`}
+              cx={getX(index)}
+              cy={getY(item.actual)}
+              r="3"
+              fill="hsl(var(--primary))"
+            />
+          );
+        })}
+      </svg>
+
+      <div className="mt-2 flex items-center gap-5 font-mono-ui text-[9px] text-[hsl(var(--muted-foreground))]">
+        <span className="flex items-center gap-2">
+          <i className="h-2 w-2 rounded-full bg-[hsl(var(--primary))]" />
+          Actual
+        </span>
+        <span className="flex items-center gap-2">
+          <i className="h-2 w-2 rounded-full bg-[hsl(var(--muted-foreground))]" />
+          Target
+        </span>
+        {forecast && (
+          <span className="flex items-center gap-2">
+            <i className="h-2 w-2 rounded-full bg-[hsl(var(--accent))]" />
+            Forecast
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+
 function Shell({ children, teamName }: { children: ReactNode; teamName: string }) {
   const [location] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -153,7 +310,12 @@ function AppContent({ teamName, onTeamNameChange }: { teamName: string; onTeamNa
   const simulateProduction = useSimulateProduction();
   const generateRecommendations = useGenerateRecommendations();
   const createReport = useCreateReport();
-  const dashboard = dashboardQuery.data ?? demoDashboard;
+  // Render API data safely even if the backend temporarily returns
+  // an array containing one dashboard object.
+  const dashboardResponse = dashboardQuery.data;
+  const dashboard = (Array.isArray(dashboardResponse)
+    ? dashboardResponse[0]
+    : dashboardResponse) ?? demoDashboard;
   const zones = zonesQuery.data ?? demoZones;
   const geology = geologyQuery.data ?? demoGeology;
   const satellite = satelliteQuery.data ?? demoSatellite;
@@ -169,7 +331,12 @@ function AppContent({ teamName, onTeamNameChange }: { teamName: string; onTeamNa
   const isLoading = false;
   if (isLoading) return <LoadingState />;
   return <Switch>
-    <Route path="/dashboard"><DashboardPage data={dashboard} activity={dashboard.activity} /></Route>
+    <Route path="/dashboard">
+      <DashboardPage
+        data={dashboard}
+        activity={dashboard.activity ?? []}
+      />
+    </Route>
     <Route path="/prospectivity"><ProspectivityPage zones={zones} geology={geology} onPredict={() => action('prospectivity')} /></Route>
     <Route path="/satellite"><SatellitePage satellite={satellite} onAnomaly={() => action('anomaly')} /></Route>
     <Route path="/reserves"><ReservesPage zones={zones} /></Route>
